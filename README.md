@@ -67,11 +67,11 @@ Click to [Quick start]()
 
 ## Documents
 
-[Deploy documentation](visualis_docs/en_US/Visualis_deploy_doc_en.md)
+[Deploy documentation](docs/en_US/Visualis_deploy_doc_en.md)
 
-[Quick integration with DSS and Linkis](visualis_docs/zh_CN/Visualis_dss_integration_cn.md)
+[Quick integration with DSS and Linkis](docs/zh_CN/Visualis_dss_integration_cn.md)
 
-[The differences between Visualis and Davinci](visualis_docs/zh_CN/Visualis_Davinci_difference_cn.md)
+[The differences between Visualis and Davinci](docs/zh_CN/Visualis_Davinci_difference_cn.md)
 
 ## Communication
 

@@ -66,11 +66,11 @@ Visualis与DataSphere Studio的数据开发、工作流调度和数据质量校�
 
 ## 文档
 
-[单独部署文档](visualis_docs/zh_CN/Visualis_deploy_doc_cn.md)
+[单独部署文档](docs/zh_CN/Visualis_deploy_doc_cn.md)
 
-[快速对接DSS和Linkis](visualis_docs/zh_CN/Visualis_deploy_doc_cn.md)
+[快速对接DSS和Linkis](docs/zh_CN/Visualis_deploy_doc_cn.md)
 
-[Visualis与Davinci的区别](visualis_docs/zh_CN/Visualis_Davinci_difference_cn.md)
+[Visualis与Davinci的区别](docs/zh_CN/Visualis_Davinci_difference_cn.md)
 
 ## 交流贡献
 
