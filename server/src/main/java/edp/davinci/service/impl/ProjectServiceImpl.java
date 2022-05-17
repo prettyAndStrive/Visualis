@@ -41,6 +41,7 @@ import edp.davinci.service.DashboardService;
 import edp.davinci.service.DisplayService;
 import edp.davinci.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -110,11 +111,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public synchronized boolean isExist(String name, Long id, Long orgId, Long userId) {
-        if(isExist(name, id, orgId)){
+        if (isExist(name, id, orgId)) {
             return true;
         }
         Project project = Iterables.getFirst(projectMapper.getProjectByNameWithUserId(name, userId), null);
-        if(project !=  null){
+        if (project != null) {
             if (null != id && null != project.getId()) {
                 return !id.equals(project.getId());
             }
@@ -170,13 +171,13 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ServerException("Invalid page info");
         }
 
-        List<OrganizationInfo> orgs = organizationMapper.getOrganizationByUser(user.getId());
-        if (CollectionUtils.isEmpty(orgs)) {
-            throw new UnAuthorizedExecption();
-        }
+//        List<OrganizationInfo> orgs = organizationMapper.getOrganizationByUser(user.getId());
+//        if (CollectionUtils.isEmpty(orgs)) {
+//            throw new UnAuthorizedExecption();
+//        }
 
         PageHelper.startPage(pageNum, pageSize);
-        List<ProjectWithCreateBy> projects = projectMapper.getProjectsByKewordsWithUser(keywords, user.getId(), orgs);
+        List<ProjectWithCreateBy> projects = projectMapper.getProjectsByKewordsWithUser(keywords, user.getId(), null);
         PageInfo<ProjectWithCreateBy> pageInfo = new PageInfo<>(projects);
         return pageInfo;
     }
@@ -204,7 +205,7 @@ public class ProjectServiceImpl implements ProjectService {
 //            throw new NotFoundException("not found organization");
 //        }
 
-        if(organization != null){
+        if (organization != null) {
             RelUserOrganization rel = relUserOrganizationMapper.getRel(user.getId(), organization.getId());
             if (rel != null && rel.getRole() != UserOrgRoleEnum.OWNER.getRole() && !organization.getAllowCreateProject()) {
                 log.info("project are not allowed to be created under the organization named {}", organization.getName());
@@ -221,7 +222,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (insert > 0) {
 
             optLogger.info("project ({}) is create by user(:{})", project.toString(), user.getId());
-            if(organization != null){
+            if (organization != null) {
                 organization.setProjectNum(organization.getProjectNum() + 1);
                 organizationMapper.updateProjectNum(organization);
             }
@@ -308,6 +309,22 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    @Override
+    public boolean setProjectToArchive(Long id, User user) throws ServerException, UnAuthorizedExecption, NotFoundException {
+
+        ProjectDetail project = getProjectDetail(id, user, true);
+
+        // 对项目进行归档处理
+        int i = projectMapper.setProjectToArchive(id);
+        if(i > 0) {
+            log.warn("The project: {} has been set to archive status", id);
+            return true;
+        } else {
+            log.error("delete project: {} fail", id);
+            throw new ServerException("delete project fail: unspecified error");
+        }
+    }
+
     /**
      * 删除project
      *
@@ -380,11 +397,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         String originInfo = project.baseInfoToString();
 
-        project.setName(projectUpdate.getName());
+//        project.setName(projectUpdate.getName());
+//        project.setVisibility(projectUpdate.getVisibility());
+//        project.setUpdateBy(user.getId());
+        // 兼容DSS更新项目，只支持修改备注和记录更新时间
         project.setDescription(projectUpdate.getDescription());
-        project.setVisibility(projectUpdate.getVisibility());
         project.setUpdateTime(new Date());
-        project.setUpdateBy(user.getId());
 
         int i = projectMapper.updateBaseInfo(project);
         if (i > 0) {
@@ -553,7 +571,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new NotFoundException("project is not found");
         }
 
-        boolean isCreater = projectDetail.getUserId().equals(user.getId()) && !projectDetail.getIsTransfer();
+        //updated for dss project sharing
+        boolean isCreater = true;//projectDetail.getUserId().equals(user.getId()) && !projectDetail.getIsTransfer();
 
         RelUserOrganization rel = relUserOrganizationMapper.getRel(user.getId(), projectDetail.getOrgId());
         RelProjectAdmin relProjectAdmin = relProjectAdminMapper.getByProjectAndUser(id, user.getId());
@@ -756,37 +775,48 @@ public class ProjectServiceImpl implements ProjectService {
      * @return
      */
     public boolean isMaintainer(ProjectDetail projectDetail, User user) {
-        if (null == projectDetail || null == user) {
-            return false;
-        }
-
-        //当前project的creater
-        if (projectDetail.getUserId().equals(user.getId()) && !projectDetail.getIsTransfer()) {
-            return true;
-        }
-
-        //project所在org的creater
-        if (projectDetail.getOrganization().getUserId().equals(user.getId())) {
-            return true;
-        }
-
-        //project 所在org的owner
-        RelUserOrganization orgRel = relUserOrganizationMapper.getRel(user.getId(), projectDetail.getOrgId());
-        if (null == orgRel) {
-            return false;
-        }
-
-        if (orgRel.getRole() == UserOrgRoleEnum.OWNER.getRole()) {
-            return true;
-        }
-
-        //project 的admin
-        RelProjectAdmin projectAdmin = relProjectAdminMapper.getByProjectAndUser(projectDetail.getId(), user.getId());
-        if (null != projectAdmin) {
-            return true;
-        }
-
-        return false;
+        return true;
+        //updated for dss project sharing
+//        if (null == projectDetail || null == user) {
+//            return false;
+//        }
+//
+//        //当前project的creater
+//        if (projectDetail.getUserId().equals(user.getId()) && !projectDetail.getIsTransfer()) {
+//            return true;
+//        }
+//
+//        //project所在org的creater
+//        if (projectDetail.getOrganization().getUserId().equals(user.getId())) {
+//            return true;
+//        }
+//
+//        //project 所在org的owner
+//        RelUserOrganization orgRel = relUserOrganizationMapper.getRel(user.getId(), projectDetail.getOrgId());
+//        if (null == orgRel) {
+//            return false;
+//        }
+//
+//        if (orgRel.getRole() == UserOrgRoleEnum.OWNER.getRole()) {
+//            return true;
+//        }
+//
+//        //project 的admin
+//        RelProjectAdmin projectAdmin = relProjectAdminMapper.getByProjectAndUser(projectDetail.getId(), user.getId());
+//        if (null != projectAdmin) {
+//            return true;
+//        }
+//
+//        return false;
     }
 
+    @Override
+    public Project checkProjectName(String keywords) {
+        if (StringUtils.isEmpty(keywords)) {
+            throw new NotFoundException("keywords is empty when check project name");
+        }
+        Project project = projectMapper.getProjectByName(keywords);
+        //工程结果为空时，设置projectId为-1，防止报空指针
+        return null == project ? new Project(-1L, -1L) : project;
+    }
 }

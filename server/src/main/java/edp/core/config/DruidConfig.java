@@ -19,9 +19,11 @@
 
 package edp.core.config;
 
+import bsp.encrypt.EncryptUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import com.webank.wedatasphere.dss.visualis.configuration.CommonConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -98,6 +100,7 @@ public class DruidConfig {
      *
      * @return
      */
+    @SuppressWarnings("unchecked")
     @Bean
     public ServletRegistrationBean druidServlet() {
         ServletRegistrationBean reg = new ServletRegistrationBean();
@@ -113,6 +116,7 @@ public class DruidConfig {
      *
      * @return
      */
+    @SuppressWarnings("unchecked")
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
@@ -131,6 +135,16 @@ public class DruidConfig {
         DruidDataSource druidDataSource = new DruidDataSource();
         druidDataSource.setUrl(durl);
         druidDataSource.setUsername(username);
+        if((Boolean) CommonConfig.ENABLE_PASSWORD_ENCRYPT().getValue()){
+            String pubKey = CommonConfig.LINKIS_MYSQL_PUB_KEY().getValue();
+            String priKey = CommonConfig.LINKIS_MYSQL_PRIV_KEY().getValue();
+            try {
+                password = EncryptUtil.decrypt(priKey, password);
+            } catch (Exception e) {
+                log.error("failed to decrypt password for {}", password, e);
+                System.exit(-2);
+            }
+        }
         druidDataSource.setPassword(password);
         druidDataSource.setDriverClassName(driverClassName);
         druidDataSource.setInitialSize(initialSize);
