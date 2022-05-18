@@ -4,7 +4,7 @@
     <parent>
         <artifactId>visualis</artifactId>
         <groupId>com.webank.wedatasphere.dss</groupId>
-        <version>1.2.4</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,12 +38,12 @@
 
     <dependencies>
 
-        <!--行内差异化变量改造-->
-        <dependency>
-            <groupId>cn.webank.bsp</groupId>
-            <artifactId>encrypt</artifactId>
-            <version>1.0.2</version>
-        </dependency>
+<!--        &lt;!&ndash;行内差异化变量改造&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>cn.webank.bsp</groupId>-->
+<!--            <artifactId>encrypt</artifactId>-->
+<!--            <version>1.0.2</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>

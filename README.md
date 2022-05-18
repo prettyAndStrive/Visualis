@@ -7,6 +7,8 @@ English | [中文](README-CH.md)
 
 ## Introduction
 
+Visualis 1.0.0
+
 Visualis is a BI tool for data visualization. It is developed based on the open source project [Davinci](https://github.com/edp963/davinci) contributed by CreditEase.
 
 Visualis has been integrated into the data application development portal [DataSphere Studio](https://github.com/WeBankFinTech/DataSphereStudio).
