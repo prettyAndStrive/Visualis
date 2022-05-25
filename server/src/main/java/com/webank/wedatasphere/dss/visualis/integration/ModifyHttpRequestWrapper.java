@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.*;
 
-/**
- * 用来将DSS请求提供的cookie信息复制到visualis侧的cookie中
- */
+
 public class ModifyHttpRequestWrapper extends HttpServletRequestWrapper {
 
     Logger logger = LoggerFactory.getLogger(ModifyHttpRequestWrapper.class);
